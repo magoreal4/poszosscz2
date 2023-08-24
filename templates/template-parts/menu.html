@@ -1,0 +1,25 @@
+<ul class='relative {{ ul_class|default:"" }}'>
+    {% for item in menu %}
+    <li class="dropdown ">
+        <a class="menuEfecto {% if item.selected %} pointer-events-none font-semibold
+                            {% else %} md:hover:sombra 
+                            {% endif %} block py-2 pr-4 pl-3 md:p-0"
+        href="{{ item.url }}">
+            {% comment %} {% if item.icon %}
+            <i class="bi bi-{{ item.icon }}"></i>
+            {% endif %} {% endcomment %}
+            {{ item.title }}  
+        </a>
+        {% if item.children %}
+        <ul class="dropdown-menu md:hidden text-sm ml-20 md:ml-0 md:absolute pt-1">
+            {% for i in item.children %}
+            <li class="">
+                <a class="bg-primary hover:bg-secondary p-2 inline-block w-full "
+                    href="{{ i.url }}">{{ i.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </li>   
+    {% endfor %}
+</ul>

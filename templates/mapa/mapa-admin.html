@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static './leaflet/leaflet.css' %}" />
+<link rel="stylesheet" href="{% static './leaflet/MarkerCluster.css' %}" />
+<link rel="stylesheet" href="{% static './leaflet/MarkerCluster.Default.css' %}" />
+
+{% endblock extra_css %}
+
+{% block body_class %}flex flex-col h-screen{% endblock body_class %}
+
+{% block header %}
+    {% include "header.html" %}
+{% endblock header %}
+
+
+{% block content %}
+
+	<!-- Mapa -->
+	<div id="map" class="h-screen max-w-full"></div>
+
+	{% include "template-parts/overlaySpinner.html" %}
+
+    <div id="panel" class="absolute text-xs w-32 bg-white top-16 right-2 z-[999] p-5 opacity-80 rounded-lg" >
+        <div id="panelRefesh">
+            <p class="select-row">Opacidad:</p>
+            <select id="mapopacity-select">
+                <option value="0.2">0.2</option>
+                <option value="0.5">0.5</option>
+                <option value="0.8">0.8</option>
+                <option value="1" selected>1</option>
+            </select>
+
+            <p class="select-row">Marca:</p>
+            <select id="elms-shape-select">
+                <option value="circulo" selected>circulo</option>
+                <option value="marca">globo</option>
+            </select>
+
+            <p class="select-row">Cobertura:</p>
+            <select id="showCoverageOnHover-select">
+                <option value="true" selected>true</option>
+                <option value="false">false</option>
+            </select>
+
+            <p class="select-row">Radio Max:</p>
+            <select id="maxClusterRadius-select">
+                <option value="1">1</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+                <option value="60">60</option>
+                <option value="70">70</option>
+                <option value="80" selected>80</option>
+                <option value="100">100</option>
+                <option value="140">140</option>
+                <option value="180">180</option>
+            </select>
+        </div>
+
+        <div class="ml-2">
+            <input id="URLwhatsapp" type="text" class="-ml-4 mt-4 border-4 w-24" placeholder="Whatsapp">
+            <button id="putMarker"
+                class="cursor-not-allowed botonPequeno text-white bg-primary hover:bg-green-800 opacity-70">
+                Ubicar
+            </button>
+            <button id="cotiza" class="cursor-not-allowed botonPequeno text-white bg-error hover:bg-red-800 opacity-70"
+                disabled>
+                Cotizar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Precio-->
+<div id="modalPrecio" class="invisible absolute left-1/2 top-0 transform -translate-x-1/2 z-[1000]">
+    <div class="relative w-full h-full md:h-auto">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow">
+            <!-- Modal header -->
+            <div class="flex justify-end">
+                <button id="xModal" type="button"
+                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <table id="tPrecios" class="table-auto font-light text-xs text-center mx-6">
+                <thead class="bg-gray-300">
+                    <tr>
+                    <th class="px-6">Origen</th>
+                    <th class="px-2">Dist(km)</th>
+                    <th class="px-2">T.(min)</th>
+                    </tr>
+                </thead>
+                <tbody id="tbValores" class="bg-gray-100">
+                </tbody>
+
+                <thead class="bg-gray-300">
+                    <tr>
+                    <th class="px-6"></th>
+                    <th class="px-2">Precio Dist.</th>
+                    <th class="px-2">Precio T.</th>
+                    </tr>
+                </thead>
+                <tbody id="tbPrecios" class="bg-gray-100">
+                </tbody>
+
+                <thead class="bg-gray-300">
+                    <tr>
+                    <th class="px-6"></th>
+                    <th class="px-2">Menor</th>
+                    <th class="px-2">Factor</th>
+                    </tr>
+                </thead>
+                <tbody id="tbMenor" class="bg-gray-100">
+                </tbody>
+
+                <thead class="bg-gray-300">
+                    <tr>
+                    <th class="px-6">Ajuste</th>
+                    <th class="px-2">Precio Sugerido</th>
+                    <th class="px-2">Precio Facturado</th>
+                    </tr>
+                </thead>
+                <tbody id="tbFinal" class="bg-gray-100">
+                </tbody>
+            </table>
+
+            <div class="max-w-xs p-4">
+                <div class="flex">
+                    <div class="w-3/4 mx-auto mt-1">
+                        <input id="formName"
+                            class="w-full text-sm text-gray-700 border border-black rounded py-1 px-2 mb-1 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            type="text" placeholder="Nombre">
+
+                        <input id="formPhone"
+                            class="w-full text-sm text-gray-700 border border-black rounded py-1 px-2 mb-1 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            type="text" placeholder="Telefono">
+                        
+                            <input id="formCost"
+                            class="w-full text-sm text-gray-700 border border-black rounded py-1 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                            type="number" placeholder="Precio" step=10>
+                    </div>
+
+                    <button id="saveData" class="mx-2 text-sm my-2 botonPequeno text-white bg-primary hover:bg-green-800">
+                    Guardar Datos
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block extra_js %}
+
+<script type="text/javascript">
+	var auth = "{{request.user.is_authenticated}}";
+	var static_url = "{% get_static_prefix %}";
+	var csrft = "{{ csrf_token }}";
+	var debug = "{{ debug }}";
+	auth == 'True' ? auth = true : auth = false;
+	debug == 'True' ? debug = true : debug = false;
+  </script>
+<script type="text/javascript" src="{% static './js/mapa-admin.js' %}"></script>
+
+{% endblock extra_js %}

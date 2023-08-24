@@ -1,0 +1,36 @@
+
+.field-cod input{
+    width: 5em;
+}
+
+.field-tel1 input{
+    width: 5em;
+}
+
+.field-tel2 input{
+    width: 5em;
+}
+
+.field-name input{
+    width: 9em;
+}
+
+.field-address {
+    width: 10em;
+}
+
+.field-cost input {
+    width: 2.5em;
+}
+
+.field-user select {
+    max-width: 6em;
+}
+
+.field-format_created_at {
+    width: 6em;
+}
+
+.field-format_updated_at {
+    width: 6em;
+}

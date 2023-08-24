@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% comment %} {{ setMain.title }} {% endcomment %}
+{% endblock title %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-primary to-white">
+    <div class="max-w-md text-white mx-auto w-4/5">
+
+        <form method="post" class="pt-6">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input
+                class="uppercase text-sm font-bold tracking-wide bg-red-600 text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline"
+                type="submit" value="Enviar mensaje">
+        </form>
+
+    </div>
+</div>
+<div class="bg-gradient-to-b from-white to-primary">
+    {% include "template-parts/footer.html" %}
+
+    <div id="fb" class="absolute bottom-12 left-4 w-16 xl:left-32">
+        {% include "template-parts/facebook.html" %}
+    </div>
+
+    <div id="wapp" class="absolute bottom-12 right-4 w-16 xl:right-32">
+        {% include "template-parts/whatsapp.html" %}
+    </div>
+</div>
+
+{% endblock  %}

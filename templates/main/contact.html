@@ -1,0 +1,47 @@
+
+
+
+{% extends "base.html" %}
+
+{% block extra_css %}
+
+{% endblock extra_css %}
+
+{% block body_class %}{% endblock body_class%}
+
+{% block header %}
+    {% include "header.html" %}
+{% endblock header %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-primary to-white">
+    <div class="max-w-md text-white mx-auto w-4/5">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="uppercase text-sm font-bold tracking-wide bg-red-600 text-gray-100 p-3 rounded-lg w-full focus:outline-none focus:shadow-outline"
+            type="submit">Enviar</button>
+        </form>
+    </div>
+</div>
+
+
+
+<div class="absolute bottom-0 w-full bg-gradient-to-b from-white to-primary">
+    
+    {% include "template-parts/footer.html" %}
+
+    <div id="fb" class="absolute bottom-12 left-4 w-16 xl:left-32">
+        {% include "template-parts/facebook.html" %}
+    </div>
+
+    <div id="wapp" class="fixed bottom-12 right-4 w-16 xl:right-32">
+        {% include "template-parts/whatsapp.html" %}
+    </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap');
+</style> 
+
+{% endblock content %}
